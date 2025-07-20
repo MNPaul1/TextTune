@@ -3,7 +3,7 @@
 
 // Define the base URL for your Node.js backend
 // In a real deployment, this would be your server's domain (e.g., 'https://api.yourdomain.com')
-const BACKEND_BASE_URL = 'http://localhost:5000'; // Adjust if your backend runs on a different port/host
+const BACKEND_BASE_URL = 'https://texttune.onrender.com'; // Adjust if your backend runs on a different port/host
 
 /**
  * Generic function to make API calls to the backend.
