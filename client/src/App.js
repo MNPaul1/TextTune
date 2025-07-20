@@ -22,26 +22,27 @@ const App = () => {
     const [error, setError] = useState(null);
 
     // Function to handle the text rewriting process
-    // Now accepts maxWordLimit and minWordLimit
-    const handleRewrite = useCallback(async (maxWordLimit, minWordLimit) => {
+    // Now accepts maxWordLimit, minWordLimit, and selectedTone
+    const handleRewrite = useCallback(async (maxWordLimit, minWordLimit, selectedTone) => {
         setRewrittenText('');
         setError(null);
         setIsLoading(true);
 
         // --- Validation for word limits ---
         if (maxWordLimit !== null && minWordLimit !== null && maxWordLimit < minWordLimit) {
-            setError("Maximum word limit cannot be less than minimum word limit.");
+            setError("Max word limit cannot be less than min word limit.");
             setIsLoading(false);
             return; // Stop execution if validation fails
         }
         // --- End Validation ---
 
         try {
-            // Pass wordLimit and minWordLimit in the data payload
+            // Pass wordLimit, minWordLimit, and tone in the data payload
             const result = await callBackendApi('/api/rewrite', {
                 text: inputRewriteText,
                 wordLimit: maxWordLimit,
-                minWordLimit: minWordLimit
+                minWordLimit: minWordLimit,
+                tone: selectedTone // Pass the selected tone
             });
             setRewrittenText(result.rewrittenText);
         } catch (err) {
@@ -53,8 +54,8 @@ const App = () => {
     }, [inputRewriteText]); // Dependencies for useCallback
 
     // Function to handle the text generation process
-    // Now accepts maxWordLimit and minWordLimit
-    const handleGenerate = useCallback(async (maxWordLimit, minWordLimit) => {
+    // Now accepts maxWordLimit, minWordLimit, and selectedTone
+    const handleGenerate = useCallback(async (maxWordLimit, minWordLimit, selectedTone) => {
         setGeneratedText('');
         setError(null);
         setIsLoading(true);
@@ -68,11 +69,12 @@ const App = () => {
         // --- End Validation ---
 
         try {
-            // Pass wordLimit and minWordLimit in the data payload
+            // Pass wordLimit, minWordLimit, and tone in the data payload
             const result = await callBackendApi('/api/generate', {
                 prompt: inputGeneratePrompt,
                 wordLimit: maxWordLimit,
-                minWordLimit: minWordLimit
+                minWordLimit: minWordLimit,
+                tone: selectedTone // Pass the selected tone
             });
             setGeneratedText(result.generatedText);
         } catch (err) {
@@ -118,7 +120,7 @@ const App = () => {
                     <RewriteMode
                         inputRewriteText={inputRewriteText}
                         setInputRewriteText={setInputRewriteText}
-                        handleRewrite={handleRewrite} // This handleRewrite now expects arguments
+                        handleRewrite={handleRewrite}
                         isLoading={isLoading}
                         rewrittenText={rewrittenText}
                     />
@@ -128,7 +130,7 @@ const App = () => {
                     <GenerateMode
                         inputGeneratePrompt={inputGeneratePrompt}
                         setInputGeneratePrompt={setInputGeneratePrompt}
-                        handleGenerate={handleGenerate} // This handleGenerate now expects arguments
+                        handleGenerate={handleGenerate}
                         isLoading={isLoading}
                         generatedText={generatedText}
                     />

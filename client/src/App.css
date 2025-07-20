@@ -57,10 +57,10 @@ body {
     text-align: center;
     color: #4b5563; /* Reverted to original color */
     margin-bottom: 2rem; /* mb-8 */
+    height: 3rem; /* Fixed height to prevent layout shift */
     display: flex; /* Use flexbox to center text vertically if needed */
     align-items: center; /* Vertically center text */
     justify-content: center; /* Horizontally center text */
-    font-weight: 300;
 }
 
 /* Navigation Bar */

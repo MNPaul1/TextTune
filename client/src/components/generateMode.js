@@ -12,15 +12,17 @@ const GenerateMode = ({
     // State for word limits specific to GenerateMode
     const [maxWordLimit, setMaxWordLimit] = useState('');
     const [minWordLimit, setMinWordLimit] = useState('');
+    // New state for tone selection
+    const [selectedTone, setSelectedTone] = useState('neutral'); // Default tone
 
-    // Function to call handleGenerate with word limits
+    // Function to call handleGenerate with all parameters
     const onGenerateClick = () => {
         // Parse word limits as numbers, or null if empty
         const parsedMaxLimit = maxWordLimit === '' ? null : parseInt(maxWordLimit, 10);
         const parsedMinLimit = minWordLimit === '' ? null : parseInt(minWordLimit, 10);
 
-        // Call the handleGenerate function passed from App.js
-        handleGenerate(parsedMaxLimit, parsedMinLimit);
+        // Pass selectedTone along with word limits
+        handleGenerate(parsedMaxLimit, parsedMinLimit, selectedTone);
     };
 
     return (
@@ -53,6 +55,28 @@ const GenerateMode = ({
                 setMinWordLimit={setMinWordLimit}
                 idPrefix="Generate" // Unique ID prefix for this mode
             />
+
+            {/* Tone Selection Dropdown */}
+            <div className="form-group">
+                <label htmlFor="toneSelectGenerate" className="label">
+                    Select Tone (Optional):
+                </label>
+                <select
+                    id="toneSelectGenerate"
+                    className="select-input" // New class for styling dropdown
+                    value={selectedTone}
+                    onChange={(e) => setSelectedTone(e.target.value)}
+                >
+                    <option value="neutral">Neutral</option>
+                    <option value="formal">Formal</option>
+                    <option value="informal">Informal</option>
+                    <option value="professional">Professional</option>
+                    <option value="friendly">Friendly</option>
+                    <option value="persuasive">Persuasive</option>
+                    <option value="academic">Academic</option>
+                    <option value="humorous">Humorous</option>
+                </select>
+            </div>
 
             {/* Generate Button */}
             <button

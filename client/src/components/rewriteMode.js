@@ -1,6 +1,6 @@
 // RewriteMode.js
 import React, { useState } from 'react';
-import WordLimitInputs from './wordLimitInputs'; // Import the new component
+import WordLimitInputs from './wordLimitInputs'; // Import the reusable component
 
 const RewriteMode = ({
     inputRewriteText,
@@ -12,15 +12,16 @@ const RewriteMode = ({
     // State for word limits specific to RewriteMode
     const [maxWordLimit, setMaxWordLimit] = useState('');
     const [minWordLimit, setMinWordLimit] = useState('');
+    // New state for tone selection
+    const [selectedTone, setSelectedTone] = useState('neutral'); // Default tone
 
-    // Function to call handleRewrite with word limits
+    // Function to call handleRewrite with all parameters
     const onRewriteClick = () => {
-        // Parse word limits as numbers, or null if empty
         const parsedMaxLimit = maxWordLimit === '' ? null : parseInt(maxWordLimit, 10);
         const parsedMinLimit = minWordLimit === '' ? null : parseInt(minWordLimit, 10);
 
-        // Call the handleRewrite function passed from App.js
-        handleRewrite(parsedMaxLimit, parsedMinLimit);
+        // Pass selectedTone along with word limits
+        handleRewrite(parsedMaxLimit, parsedMinLimit, selectedTone);
     };
 
     return (
@@ -37,22 +38,44 @@ const RewriteMode = ({
                     value={inputRewriteText}
                     onChange={(e) => setInputRewriteText(e.target.value)}
                     rows="8"
-                    spellCheck="false" // Disables browser spell check
-                    data-gramm="false" // Hint for Grammarly
-                    data-gramm_editor="false" // Another hint for Grammarly
-                    autocorrect="off" // Disables autocorrect
-                    autocomplete="off" // Disables browser autocomplete suggestions
+                    spellCheck="false"
+                    data-gramm="false"
+                    data-gramm_editor="false"
+                    autocorrect="off"
+                    autocomplete="off"
                 ></textarea>
             </div>
 
-            {/* Replaced word limit div with reusable component */}
+            {/* Word Limit Inputs */}
             <WordLimitInputs
                 maxWordLimit={maxWordLimit}
                 setMaxWordLimit={setMaxWordLimit}
                 minWordLimit={minWordLimit}
                 setMinWordLimit={setMinWordLimit}
-                idPrefix="Rewrite" // Unique ID prefix for this mode
+                idPrefix="Rewrite"
             />
+
+            {/* Tone Selection Dropdown */}
+            <div className="form-group">
+                <label htmlFor="toneSelectRewrite" className="label">
+                    Select Tone (Optional):
+                </label>
+                <select
+                    id="toneSelectRewrite"
+                    className="select-input" // New class for styling dropdown
+                    value={selectedTone}
+                    onChange={(e) => setSelectedTone(e.target.value)}
+                >
+                    <option value="neutral">Neutral</option>
+                    <option value="formal">Formal</option>
+                    <option value="informal">Informal</option>
+                    <option value="professional">Professional</option>
+                    <option value="friendly">Friendly</option>
+                    <option value="persuasive">Persuasive</option>
+                    <option value="academic">Academic</option>
+                    <option value="humorous">Humorous</option>
+                </select>
+            </div>
 
             {/* Rewrite Button */}
             <button

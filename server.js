@@ -26,25 +26,32 @@ const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/
  * @param {number} maxOutputTokens - Maximum number of tokens to generate (hard limit for API).
  * @param {number | null} wordLimit - Optional approximate maximum word limit for the generated text.
  * @param {number | null} minWordLimit - Optional approximate minimum word limit for the generated text.
+ * @param {string} tone - Optional tone/style for the generated text.
  * @returns {Promise<string>} The generated text from Gemini.
  * @throws {Error} If the API call fails or no content is found.
  */
-async function callGeminiApi(prompt, temperature, maxOutputTokens, wordLimit = null, minWordLimit = null) {
+async function callGeminiApi(prompt, temperature, maxOutputTokens, wordLimit = null, minWordLimit = null, tone = 'neutral') {
     // Dynamically import node-fetch within the async function
     // This handles the ERR_REQUIRE_ESM issue for node-fetch
     const fetch = (await import('node-fetch')).default;
 
-    // Append word limits to the prompt if provided
+    // Append word limits and tone to the prompt if provided
     let finalPrompt = prompt;
+    let constraints = [];
+
     if (minWordLimit !== null && minWordLimit > 0) {
-        finalPrompt += ` (minimum ${minWordLimit} words`;
+        constraints.push(`minimum ${minWordLimit} words`);
     }
     if (wordLimit !== null && wordLimit > 0) {
-        finalPrompt += `${minWordLimit !== null && minWordLimit > 0 ? ' and' : ''} approximately ${wordLimit} words)`;
-    } else if (minWordLimit !== null && minWordLimit > 0) {
-        finalPrompt += `)`; // Close parenthesis if only minWordLimit is present
+        constraints.push(`approximately ${wordLimit} words`);
+    }
+    if (tone && tone !== 'neutral') {
+        constraints.push(`in a ${tone} tone`);
     }
 
+    if (constraints.length > 0) {
+        finalPrompt += ` (${constraints.join(' and ')})`;
+    }
 
     const payload = {
         contents: [{ role: "user", parts: [{ text: finalPrompt }] }],
@@ -82,7 +89,7 @@ async function callGeminiApi(prompt, temperature, maxOutputTokens, wordLimit = n
 
 // API endpoint to rewrite text
 app.post('/api/rewrite', async (req, res) => {
-    const { text: input_text, wordLimit, minWordLimit } = req.body; // Destructure both limits
+    const { text: input_text, wordLimit, minWordLimit, tone } = req.body; // Destructure all parameters
 
     if (!input_text) {
         return res.status(400).json({ error: "No text provided for rewriting." });
@@ -95,8 +102,8 @@ app.post('/api/rewrite', async (req, res) => {
     Rewritten text:`;
 
     try {
-        // Pass both wordLimit and minWordLimit to callGeminiApi
-        const rewrittenText = await callGeminiApi(prompt, 0.7, 1000, wordLimit, minWordLimit);
+        // Pass all parameters to callGeminiApi
+        const rewrittenText = await callGeminiApi(prompt, 0.7, 1000, wordLimit, minWordLimit, tone);
         return res.json({ rewrittenText });
     } catch (error) {
         console.error("Error rewriting text:", error);
@@ -106,7 +113,7 @@ app.post('/api/rewrite', async (req, res) => {
 
 // API endpoint to generate text
 app.post('/api/generate', async (req, res) => {
-    const { prompt: input_prompt, wordLimit, minWordLimit } = req.body; // Destructure both limits
+    const { prompt: input_prompt, wordLimit, minWordLimit, tone } = req.body; // Destructure all parameters
 
     if (!input_prompt) {
         return res.status(400).json({ error: "No prompt provided for generation." });
@@ -119,8 +126,8 @@ app.post('/api/generate', async (req, res) => {
     Generated message:`;
 
     try {
-        // Pass both wordLimit and minWordLimit to callGeminiApi
-        const generatedText = await callGeminiApi(prompt, 0.9, 500, wordLimit, minWordLimit);
+        // Pass all parameters to callGeminiApi
+        const generatedText = await callGeminiApi(prompt, 0.9, 500, wordLimit, minWordLimit, tone);
         return res.json({ generatedText });
     } catch (error) {
         console.error("Error generating text:", error);
