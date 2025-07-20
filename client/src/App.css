@@ -216,13 +216,16 @@ input[type="number"].textarea {
     border: 1px solid #86efac; /* border border-green-300 */
     background-color: #f0fdf4; /* bg-green-50 */
 }
-
+.icon{
+    display: inline;
+}
 /* Footer text */
 .footer-text {
     font-size: 0.75rem; /* text-xs */
     color: #6b7280; /* text-gray-500 */
     margin-top: 2rem; /* mt-8 */
-    text-align: right;
+    text-align: center;
+    gap: 0.5rem; /* Space between text and SVG */
 }
 
 /* Spinner for loading state */
